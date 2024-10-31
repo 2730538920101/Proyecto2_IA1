@@ -1,0 +1,85 @@
+/* Estilos generales */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 20px;
+    color: #333;
+}
+
+/* Encabezado */
+header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Logo */
+#logo {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Título principal */
+h1 {
+    color: #2c3e50;
+}
+
+/* Estilo para el input de archivo */
+input[type="file"] {
+    display: block;
+    margin: 20px auto;
+}
+
+/* Estilo para el select */
+select {
+    display: block;
+    width: 80%;
+    margin: 20px auto;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+/* Estilos para los parámetros del modelo */
+#parameters {
+    margin: 20px auto;
+    width: 80%;
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Botones de acción */
+button {
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 10px;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    background-color: #3498db;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #2980b9;
+}
+
+/* Estilo para labels e inputs dentro de los parámetros del modelo */
+#parameters label {
+    display: block;
+    margin: 10px 0 5px;
+    font-weight: bold;
+}
+
+#parameters input, #parameters select {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
