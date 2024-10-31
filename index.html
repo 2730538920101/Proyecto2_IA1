@@ -5,21 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Proyecto Tytus - Machine Learning</title>
     <script src="js/tytus.js"></script>
-    <script src="js/script.js"></script>
+    <script src="js/script.js" defer></script>
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-    <!-- Encabezado con el logo -->
     <header>
         <h1>Carlos Javier Martinez Polanco 201709282</h1>
         <img src="assets/logo-usac.png" alt="Logo USAC" id="logo">
         <h1>Proyecto de Machine Learning con Tytus.js</h1>
     </header>
 
-    <!-- Selección de archivo -->
     <input type="file" id="file-input" accept=".csv">
     
-    <!-- Selección de modelos de ML -->
     <select id="model-select">
         <option value="">Seleccione un modelo</option>
         <option value="linear-regression">Regresión Lineal</option>
@@ -30,14 +27,9 @@
         <option value="kmeans">KMeans</option>
         <option value="knn">K vecinos más cercanos</option>
     </select>
-    
 
-    <!-- Parámetros del modelo -->
-    <div id="parameters">
-        <!-- Espacio dinámico para parámetros del modelo -->
-    </div>
+    <div id="parameters"></div>
 
-    <!-- Botones de acciones -->
     <button id="train-button">Entrenar</button>
     <button id="predict-button">Predecir</button>
     <button id="show-chart-button">Mostrar gráfica</button>

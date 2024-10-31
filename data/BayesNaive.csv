@@ -1,2 +1,2 @@
-"Valores";PorcentajeA;PorcentajeB;PorcentajeC
-"Alto,Bajo,Medio\nBajo,Medio,Alto\nMedio,Medio,Bajo";0.7;0.2;0.6
+Valores;PorcentajeA;PorcentajeB;PorcentajeC
+[[Alto,Bajo,Medio],[Bajo,Medio,Alto],[Medio,Medio,Bajo]];0.7;0.2;0.6
