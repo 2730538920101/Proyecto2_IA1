@@ -52,9 +52,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 parametersContainer.innerHTML = `
                     <label>Valores:</label>
                     <input type="text" id="values" placeholder="Lista de valores">
-                    <div id="percentage-container">
-                        <label>Porcentajes:</label>
-                    </div>
+                    <label>Porcentaje A:</label>
+                    <input type="text" id="porcentajeA" placeholder="Porcentaje A">
+                    <label>Porcentaje B:</label>
+                    <input type="text" id="porcentajeB" placeholder="Porcentaje B">
+                    <label>Porcentaje C:</label>
+                    <input type="text" id="porcentajeC" placeholder="Porcentaje C">
                 `;
                 break;
 
@@ -104,7 +107,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const reader = new FileReader();
             reader.onload = function (e) {
                 const text = e.target.result;
+                console.log("Contenido del archivo CSV:", text); // Ver el contenido del CSV
                 csvData = parseCSV(text);
+                console.log("Datos CSV:", csvData); // Ver datos leídos
+
+                // Determinar automáticamente el modelo basado en los encabezados del CSV
                 determineModel(csvData);
             };
             reader.readAsText(file);
@@ -121,13 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const data = rows.slice(1).map(row => {
             const obj = {};
             row.forEach((value, index) => {
-                // Ajustar el formato para CSVs específicos
-                if (value.startsWith("[") && value.endsWith("]")) {
-                    const items = value.slice(1, -1).split(",").map(item => item.trim());
-                    obj[headers[index]] = items; // Almacena como array
-                } else {
-                    obj[headers[index]] = value;
-                }
+                obj[headers[index]] = value;
             });
             return obj;
         }).filter(row => Object.keys(row).length > 0);
@@ -137,97 +138,103 @@ document.addEventListener('DOMContentLoaded', () => {
     function determineModel(data) {
         if (data.length > 0) {
             const headers = Object.keys(data[0]);
-
-            // Verifica si hay un encabezado llamado 'Valores' y encabezados que comienzan con 'Porcentaje'
-            const naiveBayesHeaders = headers.filter(header => header.startsWith('Porcentaje'));
-
-            if (headers.includes('Valores') && naiveBayesHeaders.length > 0) {
+            if (headers.includes('XTrain') && headers.includes('YTrain') && headers.includes('XToPredict')) {
+                modelSelect.value = 'polynomial-regression';
+                showModelParameters('polynomial-regression');
+                fillParameters(data, 'polynomial-regression');
+            } else if (headers.includes('XTrain') && headers.includes('YTrain')) {
+                modelSelect.value = 'linear-regression';
+                showModelParameters('linear-regression');
+                fillParameters(data, 'linear-regression');
+            } else if (headers.includes('Encabezados') && headers.includes('Entrenamiento') && headers.includes('Predict')) {
+                modelSelect.value = 'decision-tree';
+                showModelParameters('decision-tree');
+                fillParameters(data, 'decision-tree');
+            } else if (headers.includes('Valores') && headers.includes('PorcentajeA') && headers.includes('PorcentajeB') && headers.includes('PorcentajeC')) {
                 modelSelect.value = 'naive-bayes';
                 showModelParameters('naive-bayes');
                 fillParameters(data, 'naive-bayes');
-                renderDynamicPercentages(naiveBayesHeaders); // Llama a la función para renderizar porcentajes dinámicamente
-                return;
+            } else if (headers.includes('Entrenamiento') && headers.includes('Punto') && headers.includes('Euclideano') && headers.includes('Manhattan')) {
+                modelSelect.value = 'knn';
+                showModelParameters('knn');
+                fillParameters(data, 'knn');
+            } else if (headers.includes('NumeroClusters') && headers.includes('Entrenamiento') && headers.includes('NumeroIteraciones')) {
+                modelSelect.value = 'kmeans';
+                showModelParameters('kmeans');
+                fillParameters(data, 'kmeans');
+            } else if (headers.includes('Num1') && headers.includes('Num2')) {
+                modelSelect.value = 'neural-network';
+                showModelParameters('neural-network');
+                fillParameters(data, 'neural-network');
+            } else {
+                alert('El CSV no coincide con ningún modelo conocido.');
             }
-
-            const models = {
-                'polynomial-regression': ['XTrain', 'YTrain', 'XToPredict'],
-                'linear-regression': ['XTrain', 'YTrain'],
-                'decision-tree': ['Encabezados', 'Entrenamiento', 'Predict'],
-                'knn': ['Entrenamiento', 'Punto', 'Euclideano', 'Manhattan'],
-                'kmeans': ['NumeroClusters', 'Entrenamiento', 'NumeroIteraciones'],
-                'neural-network': ['Num1', 'Num2']
-            };
-
-            for (const [model, modelHeaders] of Object.entries(models)) {
-                if (modelHeaders.every(header => headers.includes(header))) {
-                    modelSelect.value = model;
-                    showModelParameters(model);
-                    fillParameters(data, model);
-                    return;
-                }
-            }
-
-            alert('El CSV no coincide con ningún modelo conocido.');
         }
-    }
-
-    function renderDynamicPercentages(headers) {
-        const percentageContainer = document.getElementById('percentage-container');
-        percentageContainer.innerHTML = ''; // Limpiar contenedor de porcentajes
-
-        headers.forEach((header, index) => {
-            const percentageInput = document.createElement('input');
-            percentageInput.type = 'text';
-            percentageInput.id = `percentage${index}`;
-            percentageInput.placeholder = `${header}`;
-            percentageContainer.appendChild(percentageInput);
-        });
     }
 
     function fillParameters(data, selectedModel) {
         switch (selectedModel) {
             case 'linear-regression':
+                const linearX = data.map(row => row.XTrain).join(',');
+                const linearY = data.map(row => row.YTrain).join(',');
+                document.getElementById('xtrain').value = linearX;
+                document.getElementById('ytrain').value = linearY;
+                break;
+
             case 'polynomial-regression':
-                document.getElementById('xtrain').value = data.map(row => row.XTrain).join(',');
-                document.getElementById('ytrain').value = data.map(row => row.YTrain).join(',');
-                if (selectedModel === 'polynomial-regression') {
-                    document.getElementById('xtopredict').value = data.map(row => row.XToPredict).join(',');
-                }
+                const polyX = data.map(row => row.XTrain).join(',');
+                const polyY = data.map(row => row.YTrain).join(',');
+                const polyXToPredict = data.map(row => row.XToPredict).join(',');
+                document.getElementById('xtrain').value = polyX;
+                document.getElementById('ytrain').value = polyY;
+                document.getElementById('xtopredict').value = polyXToPredict;
                 break;
 
             case 'decision-tree':
-                document.getElementById('headers').value = data[0].Encabezados; // Asume que es solo uno
-                document.getElementById('training').value = data.map(row => row.Entrenamiento).join(';');
-                document.getElementById('predict').value = data.map(row => row.Predict).join(',');
+                const decisionHeaders = data.map(row => row.Encabezados).join(',');
+                const decisionTraining = data.map(row => row.Entrenamiento).join(';'); // Cambiado a ";" para formato matriz
+                const decisionPredict = data.map(row => row.Predict).join(','); 
+                document.getElementById('headers').value = decisionHeaders;
+                document.getElementById('training').value = decisionTraining;
+                document.getElementById('predict').value = decisionPredict;
                 break;
 
             case 'naive-bayes':
-                document.getElementById('values').value = data[0].Valores.join(','); // Solo un conjunto de valores
-                const percentageInputs = Array.from(document.querySelectorAll('#percentage-container input'));
-                percentageInputs.forEach((input, index) => {
-                    const percentageValue = data[0][`Porcentaje${String.fromCharCode(65 + index)}`];
-                    if (percentageValue !== undefined) {
-                        input.value = percentageValue;
-                    }
-                });
+                const naiveValues = data.map(row => row.Valores).join(',');
+                const naivePorcentajeA = data.map(row => row.PorcentajeA).join(',');
+                const naivePorcentajeB = data.map(row => row.PorcentajeB).join(',');
+                const naivePorcentajeC = data.map(row => row.PorcentajeC).join(',');
+                document.getElementById('values').value = naiveValues;
+                document.getElementById('porcentajeA').value = naivePorcentajeA;
+                document.getElementById('porcentajeB').value = naivePorcentajeB;
+                document.getElementById('porcentajeC').value = naivePorcentajeC;
                 break;
 
             case 'neural-network':
-                document.getElementById('num1').value = data[0].Num1; // Solo un valor
-                document.getElementById('num2').value = data[0].Num2; // Solo un valor
+                const neuralNum1 = data.map(row => row.Num1).join(',');
+                const neuralNum2 = data.map(row => row.Num2).join(',');
+                document.getElementById('num1').value = neuralNum1;
+                document.getElementById('num2').value = neuralNum2;
                 break;
 
             case 'kmeans':
-                document.getElementById('clusters').value = data[0].NumeroClusters; // Solo un valor
-                document.getElementById('training').value = data.map(row => row.Entrenamiento).join(';');
-                document.getElementById('iterations').value = data[0].NumeroIteraciones; // Solo un valor
+                const kmeansClusters = data.map(row => row.NumeroClusters).join(',');
+                const kmeansTraining = data.map(row => row.Entrenamiento).join(';'); // Cambiado a ";" para formato matriz
+                const kmeansIterations = data.map(row => row.NumeroIteraciones).join(',');
+                document.getElementById('clusters').value = kmeansClusters;
+                document.getElementById('training').value = kmeansTraining;
+                document.getElementById('iterations').value = kmeansIterations;
                 break;
 
             case 'knn':
-                document.getElementById('training').value = data.map(row => row.Entrenamiento).join(';');
-                document.getElementById('point').value = data[0].Punto; // Solo un valor
-                document.getElementById('euclidean').value = data[0].Euclideano; // Solo un valor
-                document.getElementById('manhattan').value = data[0].Manhattan; // Solo un valor
+                const knnTraining = data.map(row => row.Entrenamiento).join(';'); // Cambiado a ";" para formato matriz
+                const knnPoint = data.map(row => row.Punto).join(',');
+                const knnEuclidean = data.map(row => row.Euclidean).join(',');
+                const knnManhattan = data.map(row => row.Manhattan).join(',');
+                document.getElementById('training').value = knnTraining;
+                document.getElementById('point').value = knnPoint;
+                document.getElementById('euclidean').value = knnEuclidean;
+                document.getElementById('manhattan').value = knnManhattan;
                 break;
 
             default:
@@ -235,59 +242,164 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Entrenamiento del modelo
     trainButton.addEventListener('click', () => {
-        alert('Entrenamiento comenzado con los parámetros: ' + JSON.stringify(getParameters()));
-    });
-
-    function getParameters() {
         const selectedModel = modelSelect.value;
-        const parameters = {};
+        const errors = validateInputs(selectedModel);
+
+        if (errors.length > 0) {
+            alert(errors.join('\n'));
+            return;
+        }
 
         switch (selectedModel) {
             case 'linear-regression':
-                parameters.XTrain = document.getElementById('xtrain').value.split(',').map(Number);
-                parameters.YTrain = document.getElementById('ytrain').value.split(',').map(Number);
+                trainLinearRegression();
                 break;
 
             case 'polynomial-regression':
-                parameters.XTrain = document.getElementById('xtrain').value.split(',').map(Number);
-                parameters.YTrain = document.getElementById('ytrain').value.split(',').map(Number);
-                parameters.XToPredict = document.getElementById('xtopredict').value.split(',').map(Number);
+                trainPolynomialRegression();
                 break;
 
             case 'decision-tree':
-                parameters.Encabezados = document.getElementById('headers').value.split(',');
-                parameters.Entrenamiento = document.getElementById('training').value.split(';').map(row => row.split(','));
-                parameters.Predict = document.getElementById('predict').value.split(',');
+                trainDecisionTree();
                 break;
 
             case 'naive-bayes':
-                parameters.Valores = document.getElementById('values').value.split(',');
-                parameters.Porcentajes = Array.from(document.querySelectorAll('#percentage-container input')).map(input => Number(input.value));
+                trainNaiveBayes();
                 break;
 
             case 'neural-network':
-                parameters.Num1 = Number(document.getElementById('num1').value);
-                parameters.Num2 = Number(document.getElementById('num2').value);
+                trainNeuralNetwork();
                 break;
 
             case 'kmeans':
-                parameters.NumeroClusters = Number(document.getElementById('clusters').value);
-                parameters.Entrenamiento = document.getElementById('training').value.split(';').map(row => row.split(','));
-                parameters.NumeroIteraciones = Number(document.getElementById('iterations').value);
+                trainKMeans();
                 break;
 
             case 'knn':
-                parameters.Entrenamiento = document.getElementById('training').value.split(';').map(row => row.split(','));
-                parameters.Punto = document.getElementById('point').value.split(',');
-                parameters.Euclideano = Number(document.getElementById('euclidean').value);
-                parameters.Manhattan = document.getElementById('manhattan').value.split(',');
+                trainKNN();
+                break;
+
+            default:
+                alert('Modelo no válido.');
+        }
+    });
+
+    // Función de validación
+    function validateInputs(model) {
+        const errors = [];
+
+        switch (model) {
+            case 'linear-regression':
+                const xTrain = document.getElementById('xtrain').value.split(',').map(Number);
+                const yTrain = document.getElementById('ytrain').value.split(',').map(Number);
+                if (xTrain.length !== yTrain.length) {
+                    errors.push('La longitud de XTrain y YTrain debe ser igual.');
+                }
+                break;
+
+            case 'polynomial-regression':
+                const polyXTrain = document.getElementById('xtrain').value.split(',').map(Number);
+                const polyYTrain = document.getElementById('ytrain').value.split(',').map(Number);
+                const polyXToPredict = document.getElementById('xtopredict').value.split(',').map(Number);
+                if (polyXTrain.length !== polyYTrain.length) {
+                    errors.push('La longitud de XTrain y YTrain debe ser igual.');
+                }
+                if (polyXToPredict.length === 0) {
+                    errors.push('XToPredict no puede estar vacío.');
+                }
+                break;
+
+            case 'decision-tree':
+                const decisionTraining = document.getElementById('training').value.split(';').map(row => row.split(',').map(Number));
+                const decisionPredict = document.getElementById('predict').value.split(',').map(Number);
+                if (decisionTraining.length === 0) {
+                    errors.push('La matriz de entrenamiento no puede estar vacía.');
+                }
+                if (decisionPredict.length === 0) {
+                    errors.push('La lista de valores para predecir no puede estar vacía.');
+                }
+                break;
+
+            case 'naive-bayes':
+                const naiveValues = document.getElementById('values').value.split(',').map(Number);
+                const porcentajeA = Number(document.getElementById('porcentajeA').value);
+                const porcentajeB = Number(document.getElementById('porcentajeB').value);
+                const porcentajeC = Number(document.getElementById('porcentajeC').value);
+                if (naiveValues.length === 0) {
+                    errors.push('Los valores no pueden estar vacíos.');
+                }
+                if (porcentajeA + porcentajeB + porcentajeC !== 100) {
+                    errors.push('Los porcentajes A, B y C deben sumar 100.');
+                }
+                break;
+
+            case 'neural-network':
+                // Aquí puedes agregar validaciones específicas para redes neuronales
+                break;
+
+            case 'kmeans':
+                const kmeansClusters = Number(document.getElementById('clusters').value);
+                const kmeansIterations = Number(document.getElementById('iterations').value);
+                if (isNaN(kmeansClusters) || kmeansClusters <= 0) {
+                    errors.push('El número de clusters debe ser un número positivo.');
+                }
+                if (isNaN(kmeansIterations) || kmeansIterations <= 0) {
+                    errors.push('El número de iteraciones debe ser un número positivo.');
+                }
+                break;
+
+            case 'knn':
+                const knnTraining = document.getElementById('training').value.split(';').map(row => row.split(',').map(Number));
+                const knnPoint = document.getElementById('point').value.split(',').map(Number);
+                if (knnTraining.length === 0) {
+                    errors.push('La matriz de entrenamiento no puede estar vacía.');
+                }
+                if (knnPoint.length === 0) {
+                    errors.push('El punto de comparación no puede estar vacío.');
+                }
                 break;
 
             default:
                 break;
         }
 
-        return parameters;
+        return errors;
+    }
+
+    function trainLinearRegression() {
+        // Lógica para entrenar el modelo de regresión lineal
+        console.log('Entrenando regresión lineal...');
+    }
+
+    function trainPolynomialRegression() {
+        // Lógica para entrenar el modelo de regresión polinómica
+        console.log('Entrenando regresión polinómica...');
+    }
+
+    function trainDecisionTree() {
+        // Lógica para entrenar el modelo de árbol de decisión
+        console.log('Entrenando árbol de decisión...');
+    }
+
+    function trainNaiveBayes() {
+        // Lógica para entrenar el modelo Naive Bayes
+        console.log('Entrenando Naive Bayes...');
+    }
+
+    function trainNeuralNetwork() {
+        // Lógica para entrenar la red neuronal
+        console.log('Entrenando red neuronal...');
+    }
+
+    function trainKMeans() {
+        // Lógica para entrenar el modelo K-means
+        console.log('Entrenando K-means...');
+    }
+
+    function trainKNN() {
+        // Lógica para entrenar el modelo KNN
+        console.log('Entrenando KNN...');
     }
 });
