@@ -59,13 +59,12 @@ document.addEventListener('DOMContentLoaded', () => {
             validate: validateKMeans
         },
         'knn': {
-            params: `
-                <label>Entrenamiento:</label><input type="text" id="training" placeholder="Matriz de entrenamiento">
-                <label>Punto:</label><input type="text" id="point" placeholder="Registro de comparación">
-                <label>Euclideano:</label><input type="number" id="euclidean" placeholder="Distancia Euclideana">
-                <label>Manhattan:</label><input type="text" id="manhattan" placeholder="Valores Manhattan">`,
-            fill: fillKNN,
-            validate: validateKNN
+        params: `
+            <label>Entrenamiento:</label><input type="text" id="training" placeholder="Matriz de entrenamiento">
+            <label>Punto:</label><input type="text" id="point" placeholder="Registro de comparación">
+        `,
+        fill: fillKNN,
+        validate: validateKNN
         }
     };
 
@@ -125,7 +124,16 @@ document.addEventListener('DOMContentLoaded', () => {
             selectedModel = 'neural-network';
         } else if (headers.includes('NumeroClusters') && headers.includes('Entrenamiento') && headers.includes('NumeroIteraciones')) {
             selectedModel = 'kmeans';
-        } else if (headers.includes('Entrenamiento') && headers.includes('Punto') && headers.includes('Euclideano') && headers.includes('Manhattan')) {
+        } else if (
+            headers.includes('Index') &&
+            headers.includes('X') &&
+            headers.includes('Y') &&
+            headers.includes('Z') &&
+            headers.includes('Group') &&
+            headers.includes('TargetX') &&
+            headers.includes('TargetY') &&
+            headers.includes('TargetZ')
+        ) {
             selectedModel = 'knn';
         }
 
@@ -175,11 +183,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function fillKNN(data) {
-        document.getElementById('training').value = data.map(row => row.Entrenamiento).join(';');
-        document.getElementById('point').value = data.map(row => row.Punto).join(',');
-        document.getElementById('euclidean').value = data.map(row => row.Euclideano).join(',');
-        document.getElementById('manhattan').value = data.map(row => row.Manhattan).join(',');
+        const trainingData = data.map(row => [row.Index, row.X, row.Y, row.Z, row.Group]);
+        const targetPoint = [data[0].TargetX, data[0].TargetY, data[0].TargetZ];
+    
+        document.getElementById('training').value = trainingData.map(row => row.join(',')).join(';');
+        document.getElementById('point').value = targetPoint.join(',');
     }
+    
 
     // Funciones de validación
     function validateLinearRegression() {
@@ -257,10 +267,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const errors = [];
         const training = document.getElementById('training').value.split(';').map(row => row.split(','));
         const point = document.getElementById('point').value.split(',').map(Number);
+    
         if (!training.length) errors.push('El campo Entrenamiento no puede estar vacío.');
-        if (!point.length) errors.push('El campo Punto no puede estar vacío.');
+        if (!point.length || point.some(isNaN)) errors.push('El campo Punto debe contener valores numéricos.');
+    
         return errors;
     }
+    
     
     // Manejo de acciones
     function handleAction(action) {

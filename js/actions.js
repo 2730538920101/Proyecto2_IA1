@@ -73,7 +73,7 @@ export function train(data, modelType) {
             document.getElementById('results').innerHTML += `<p>Red neuronal entrenada.</p>`;
             break;
         case 'kmeans':
-            console.log('Entrenando modelo de k-means.');
+            alert('No existe un entrenamiento del modelo de k-means, verificar tendencia.');
             break;
         case 'knn':
             console.log('Entrenando modelo de k-vecinos más cercanos.');
@@ -148,10 +148,10 @@ export function predict(data, modelType) {
             document.getElementById('results').innerHTML += `<p>${neuralPredictionResults}</p>`;
             break;
         case 'kmeans':
-            console.log('Realizando predicción con modelo de k-means.');
+            alert('No existe una predicción con modelo de k-means, verificar tendencia.');
             break;
         case 'knn':
-            console.log('Realizando predicción con k-vecinos más cercanos.');
+            alert('No existe una predicción con modelo k-vecinos más cercanos.');
             break;
         default:
             console.log('Modelo no reconocido.');
@@ -249,10 +249,10 @@ export function graph(data, modelType) {
             alert('No existe un gráfico de red neuronal.');
             break;
         case 'kmeans':
-            console.log('Mostrando gráfico de k-means.');
+            alert('Este modelo muestra tendencias.');
             break;
         case 'knn':
-            console.log('Mostrando gráfico de k-vecinos más cercanos.');
+            alert('No existe un gráfico de k-vecinos más cercanos.');
             break;
         default:
             console.log('Modelo no reconocido.');
@@ -323,6 +323,37 @@ export function tendence(data, modelType) {
             break;
         case 'knn':
             console.log('Mostrando tendencia de k-vecinos más cercanos.');
+
+            // Crear arreglos para los valores de entrenamiento y el punto de prueba
+            const x2 = data.map(item => parseFloat(item.X));
+            const y2 = data.map(item => parseFloat(item.Y));
+            const z = data.map(item => parseFloat(item.Z));
+            const group = data.map(item => item.Group);
+
+            // Crear una lista de individuos con sus coordenadas y grupo
+            const individuals = zip([x2, y2, z, group]);
+            
+            // Crear el punto de prueba usando TargetX, TargetY, TargetZ de la primera fila
+            const point = [
+                parseFloat(data[0].TargetX),
+                parseFloat(data[0].TargetY),
+                parseFloat(data[0].TargetZ)
+            ];
+
+            // Inicializar KNN y calcular distancias
+            var knn = new KNearestNeighbor(individuals);
+            var euc = knn.euclidean(point);
+            var man = knn.manhattan(point);
+
+            console.log('Distancia Euclidiana:', euc);
+            console.log('Distancia Manhattan:', man);
+
+            // Mostrar resultados en el elemento HTML
+            const knnResults = `
+                <p>Distancia Euclidiana: ${euc.join(', ')}</p>
+                <p>Distancia Manhattan: ${man.join(', ')}</p>
+            `;
+            document.getElementById('results').innerHTML += knnResults;
             break;
         default:
             console.log('Modelo no reconocido.');
@@ -402,6 +433,8 @@ export function tendence(data, modelType) {
         return colors;
     }
 }
-
+function zip(arrays) {
+    return arrays[0].map((_, i) => arrays.map(array => array[i]));
+}
 
 
