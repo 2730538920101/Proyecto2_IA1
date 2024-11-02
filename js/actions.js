@@ -279,6 +279,46 @@ export function tendence(data, modelType) {
             alert('No existe una funcion de tendencia de red neuronal.');
             break;
         case 'kmeans':
+            const clusterCount = parseInt(data[0].NumeroClusters);
+            const iterations = parseInt(data[0].NumeroIteraciones);
+            const trainingData = data[0].Entrenamiento;
+
+            let trainingData1D = [];
+            let trainingData2D = [];
+
+            // Validación y parsing de datos para datos 2D
+            if (trainingData.includes('[') && trainingData.includes(']')) {
+                // Es 2D
+                trainingData2D = trainingData
+                    .replace(/\s/g, '')                // Eliminar espacios
+                    .slice(1, -1)                     // Quitar corchetes externos
+                    .split('],[')                     // Dividir por puntos
+                    .map(point => point.split(',').map(Number)); // Convertir a números
+
+                console.log('Datos 2D:', trainingData2D);
+            } else {
+                // Es 1D
+                trainingData1D = trainingData.split(',').map(Number); // convertir a números
+                console.log('Datos 1D:', trainingData1D);
+            }
+
+            // Procesar KMeans para datos 1D
+            if (trainingData1D.length > 0) {
+                console.log('Ejecutando KMeans 1D');
+                var kmeans1D = new LinearKMeans(clusterCount, trainingData1D);
+                let clusterizedData1D = kmeans1D.clusterize(clusterCount, trainingData1D, iterations);
+                draw1DChart(clusterizedData1D);
+            }
+
+            // Procesar KMeans para datos 2D y asignar colores únicos a cada cluster
+            if (trainingData2D.length > 0) {
+                console.log('Ejecutando KMeans 2D');
+                var kmeans2D = new _2DKMeans(clusterCount, trainingData2D);
+                let clusterizedData2D = kmeans2D.clusterize(clusterCount, trainingData2D, iterations);
+                console.log('Datos clusterizados:', clusterizedData2D);
+                draw2DChart(clusterizedData2D, generateColors(clusterCount));
+            }
+
             console.log('Mostrando tendencia de k-means.');
             break;
         case 'knn':
@@ -287,4 +327,81 @@ export function tendence(data, modelType) {
         default:
             console.log('Modelo no reconocido.');
     }
+
+    function draw1DChart(clusterizedData) {
+        const ctx = document.getElementById('chart').getContext('2d');
+        const labels = clusterizedData.map((_, index) => index + 1);
+
+        const dataToPlot = {
+            labels: labels,
+            datasets: [{
+                label: 'Clusterizados 1D',
+                data: clusterizedData,
+                borderColor: 'blue',
+                fill: false
+            }]
+        };
+
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+        new Chart(ctx, {
+            type: 'line',
+            data: dataToPlot,
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+
+    function draw2DChart(clusterizedData, colorClusters) {
+        const ctx = document.getElementById('chart').getContext('2d');
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+        const dataPoints = clusterizedData.map(cluster => {
+            const colorIndex = cluster[1];
+            return {
+                x: cluster[0][0],
+                y: cluster[0][1],
+                backgroundColor: colorClusters[colorIndex]
+            };
+        });
+
+        new Chart(ctx, {
+            type: 'scatter',
+            data: {
+                datasets: [{
+                    label: 'Clusterizados 2D',
+                    data: dataPoints,
+                    backgroundColor: dataPoints.map(point => point.backgroundColor),
+                    pointRadius: 5
+                }]
+            },
+            options: {
+                scales: {
+                    x: {
+                        type: 'linear',
+                        position: 'bottom'
+                    },
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+
+    function generateColors(clusterCount) {
+        const colors = [];
+        for (let i = 0; i < clusterCount; i++) {
+            colors.push(`#${Math.floor(Math.random() * 16777215).toString(16)}`);
+        }
+        return colors;
+    }
 }
+
+
+
