@@ -2,7 +2,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const fileInput = document.getElementById('file-input');
     const modelSelect = document.getElementById('model-select');
     const parametersContainer = document.getElementById('parameters');
-    const trainButton = document.getElementById('train-button');
+    const trainButton = document.getElementById('trainButton');
+    const predictButton = document.getElementById('predictButton');
+    const showChartButton = document.getElementById('showChartButton');
 
     let csvData = []; // Para almacenar los datos CSV
 
@@ -242,6 +244,92 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    predictButton.addEventListener('click', () => {
+        const selectedModel = modelSelect.value;
+        const errors = validateInputs(selectedModel);
+
+        if (errors.length > 0) {
+            alert(errors.join('\n'));
+            return;
+        }
+
+        switch (selectedModel) {
+            case 'linear-regression':
+                predictLinearRegression();
+                break;
+
+            case 'polynomial-regression':
+                predictPolynomialRegression();
+                break;
+
+            case 'decision-tree':
+                predictDecisionTree();
+                break;
+
+            case 'naive-bayes':
+                predictNaiveBayes();
+                break;
+
+            case 'neural-network':
+                predictNeuralNetwork();
+                break;
+
+            case 'kmeans':
+                predictKMeans();
+                break;
+
+            case 'knn':
+                predictKNN();
+                break;
+
+            default:
+                alert('Modelo no válido.');
+        }
+    });
+
+    showChartButton.addEventListener('click', () => {
+        const selectedModel = modelSelect.value;
+        const errors = validateInputs(selectedModel);
+
+        if (errors.length > 0) {
+            alert(errors.join('\n'));
+            return;
+        }
+
+        switch (selectedModel) {
+            case 'linear-regression':
+                graphLinearRegression();
+                break;
+
+            case 'polynomial-regression':
+                graphPolynomialRegression();
+                break;
+
+            case 'decision-tree':
+                graphDecisionTree();
+                break;
+
+            case 'naive-bayes':
+                graphNaiveBayes();
+                break;
+
+            case 'neural-network':
+                graphNeuralNetwork();
+                break;
+
+            case 'kmeans':
+                graphKMeans();
+                break;
+
+            case 'knn':
+                graphKNN();
+                break;
+
+            default:
+                alert('Modelo no válido.');
+        }
+    });
+
     // Entrenamiento del modelo
     trainButton.addEventListener('click', () => {
         const selectedModel = modelSelect.value;
@@ -286,87 +374,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Función de validación
-    function validateInputs(model) {
-        const errors = [];
-
-        switch (model) {
-            case 'linear-regression':
-                const xTrain = document.getElementById('xtrain').value.split(',').map(Number);
-                const yTrain = document.getElementById('ytrain').value.split(',').map(Number);
-                if (xTrain.length !== yTrain.length) {
-                    errors.push('La longitud de XTrain y YTrain debe ser igual.');
-                }
-                break;
-
-            case 'polynomial-regression':
-                const polyXTrain = document.getElementById('xtrain').value.split(',').map(Number);
-                const polyYTrain = document.getElementById('ytrain').value.split(',').map(Number);
-                const polyXToPredict = document.getElementById('xtopredict').value.split(',').map(Number);
-                if (polyXTrain.length !== polyYTrain.length) {
-                    errors.push('La longitud de XTrain y YTrain debe ser igual.');
-                }
-                if (polyXToPredict.length === 0) {
-                    errors.push('XToPredict no puede estar vacío.');
-                }
-                break;
-
-            case 'decision-tree':
-                const decisionTraining = document.getElementById('training').value.split(';').map(row => row.split(',').map(Number));
-                const decisionPredict = document.getElementById('predict').value.split(',').map(Number);
-                if (decisionTraining.length === 0) {
-                    errors.push('La matriz de entrenamiento no puede estar vacía.');
-                }
-                if (decisionPredict.length === 0) {
-                    errors.push('La lista de valores para predecir no puede estar vacía.');
-                }
-                break;
-
-            case 'naive-bayes':
-                const naiveValues = document.getElementById('values').value.split(',').map(Number);
-                const porcentajeA = Number(document.getElementById('porcentajeA').value);
-                const porcentajeB = Number(document.getElementById('porcentajeB').value);
-                const porcentajeC = Number(document.getElementById('porcentajeC').value);
-                if (naiveValues.length === 0) {
-                    errors.push('Los valores no pueden estar vacíos.');
-                }
-                if (porcentajeA + porcentajeB + porcentajeC !== 100) {
-                    errors.push('Los porcentajes A, B y C deben sumar 100.');
-                }
-                break;
-
-            case 'neural-network':
-                // Aquí puedes agregar validaciones específicas para redes neuronales
-                break;
-
-            case 'kmeans':
-                const kmeansClusters = Number(document.getElementById('clusters').value);
-                const kmeansIterations = Number(document.getElementById('iterations').value);
-                if (isNaN(kmeansClusters) || kmeansClusters <= 0) {
-                    errors.push('El número de clusters debe ser un número positivo.');
-                }
-                if (isNaN(kmeansIterations) || kmeansIterations <= 0) {
-                    errors.push('El número de iteraciones debe ser un número positivo.');
-                }
-                break;
-
-            case 'knn':
-                const knnTraining = document.getElementById('training').value.split(';').map(row => row.split(',').map(Number));
-                const knnPoint = document.getElementById('point').value.split(',').map(Number);
-                if (knnTraining.length === 0) {
-                    errors.push('La matriz de entrenamiento no puede estar vacía.');
-                }
-                if (knnPoint.length === 0) {
-                    errors.push('El punto de comparación no puede estar vacío.');
-                }
-                break;
-
-            default:
-                break;
-        }
-
-        return errors;
-    }
+    
 
     function trainLinearRegression() {
         // Lógica para entrenar el modelo de regresión lineal
@@ -402,4 +410,166 @@ document.addEventListener('DOMContentLoaded', () => {
         // Lógica para entrenar el modelo KNN
         console.log('Entrenando KNN...');
     }
+
+    
+    function predictLinearRegression() {
+        // Lógica para predecir el modelo de regresión lineal
+        console.log('Prediciendo regresión lineal...');
+    }
+
+    function predictPolynomialRegression() {
+        // Lógica para predecir el modelo de regresión polinómica
+        console.log('Prediciendo regresión polinómica...');
+    }
+
+    function predictDecisionTree() {
+        // Lógica para predecir el modelo de árbol de decisión
+        console.log('Prediciendo árbol de decisión...');
+    }
+
+    function predictNaiveBayes() {
+        // Lógica para predecir el modelo Naive Bayes
+        console.log('Prediciedo Naive Bayes...');
+    }
+
+    function predictNeuralNetwork() {
+        // Lógica para predecir la red neuronal
+        console.log('Prediciendo red neuronal...');
+    }
+
+    function predictKMeans() {
+        // Lógica para predecir el modelo K-means
+        console.log('Prediciendo K-means...');
+    }
+
+    function predictKNN() {
+        // Lógica para predecir el modelo KNN
+        console.log('Prediciendo KNN...');
+    }
+
+    function graphLinearRegression() {
+        // Lógica para graficar el modelo de regresión lineal
+        console.log('Graficando regresión lineal...');
+    }
+
+    function graphPolynomialRegression() {
+        // Lógica para graficar el modelo de regresión polinómica
+        console.log('Graficando regresión polinómica...');
+    }
+
+    function graphDecisionTree() {
+        // Lógica para graficar el modelo de árbol de decisión
+        console.log('Graficando árbol de decisión...');
+    }
+
+    function graphNaiveBayes() {
+        // Lógica para graficar el modelo Naive Bayes
+        console.log('Graficando Naive Bayes...');
+    }
+
+    function graphNeuralNetwork() {
+        // Lógica para graficar la red neuronal
+        console.log('Graficando red neuronal...');
+    }
+
+    function graphKMeans() {
+        // Lógica para graficar el modelo K-means
+        console.log('Graficando K-means...');
+    }
+
+    function graphKNN() {
+        // Lógica para graficar el modelo KNN
+        console.log('Graficando KNN...');
+    }
+
+
+    function validateInputs(model) {
+        const errors = [];
+    
+        switch (model) {
+            case 'linear-regression':
+                const xTrain = document.getElementById('xtrain').value.split(',').map(Number);
+                const yTrain = document.getElementById('ytrain').value.split(',').map(Number);
+                if (xTrain.length !== yTrain.length) {
+                    errors.push('La longitud de XTrain y YTrain debe ser igual.');
+                }
+                break;
+    
+            case 'polynomial-regression':
+                const polyXTrain = document.getElementById('xtrain').value.split(',').map(Number);
+                const polyYTrain = document.getElementById('ytrain').value.split(',').map(Number);
+                const polyXToPredict = document.getElementById('xtopredict').value.split(',').map(Number);
+                if (polyXTrain.length !== polyYTrain.length) {
+                    errors.push('La longitud de XTrain y YTrain debe ser igual.');
+                }
+                if (polyXToPredict.length === 0) {
+                    errors.push('XToPredict no puede estar vacío.');
+                }
+                break;
+    
+            case 'decision-tree':
+                const decisionHeaders = document.getElementById('headers').value.split(',');
+                const training = document.getElementById('training').value.split(';').map(row => row.split(','));
+                const predict = document.getElementById('predict').value.split(',');
+                 if (training.some(row => row.length !== decisionHeaders.length)) {
+                    errors.push('Todas las filas de entrenamiento deben tener la misma longitud que el número de encabezados.');
+                }
+                if (predict.length === 0) {
+                    errors.push('El campo Predict no puede estar vacío.');
+                }
+                break;
+
+            case 'naive-bayes':
+                const naiveValues = document.getElementById('values').value.split(',');
+                const naivePercentages = [
+                    document.getElementById('porcentajeA').value,
+                    document.getElementById('porcentajeB').value,
+                    document.getElementById('porcentajeC').value
+                ].map(Number);
+                if (naiveValues.length === 0) {
+                    errors.push('El campo Valores no puede estar vacío.');
+                }
+                if (naivePercentages.some(p => isNaN(p))) {
+                    errors.push('Todos los porcentajes deben ser números.');
+                }
+                break;
+
+            case 'neural-network':
+                const num1 = Number(document.getElementById('num1').value);
+                const num2 = Number(document.getElementById('num2').value);
+                if (isNaN(num1) || isNaN(num2)) {
+                    errors.push('Ambos valores deben ser números.');
+                }
+                break;
+
+            case 'kmeans':
+                const clusters = Number(document.getElementById('clusters').value);
+                const kmeansTraining = document.getElementById('training').value.split(';').map(row => row.split(','));
+                if (isNaN(clusters) || clusters <= 0) {
+                    errors.push('El número de clusters debe ser un número positivo.');
+                }
+                if (kmeansTraining.some(row => row.length < 2)) {
+                    errors.push('Cada fila de entrenamiento debe tener al menos dos valores.');
+                }
+                break;
+
+            case 'knn':
+                const knnTraining = document.getElementById('training').value.split(';').map(row => row.split(','));
+                const knnPoint = document.getElementById('point').value.split(',').map(Number);
+                if (knnTraining.length === 0) {
+                    errors.push('El campo Entrenamiento no puede estar vacío.');
+                }
+                if (knnPoint.length === 0) {
+                    errors.push('El campo Punto no puede estar vacío.');
+                }
+                break;
+
+            default:
+                errors.push('Modelo no válido.');
+                break;
+        }
+        return errors;
+    }
+    
+
 });
