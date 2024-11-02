@@ -166,10 +166,18 @@ export function graph(data, modelType) {
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     switch (modelType) {
         case 'linear-regression':
+            if (!linearModel || !xTrain || !yTrain) {
+                console.log('El modelo de regresión lineal no ha sido entrenado o los datos son insuficientes.');
+                return;
+            }
+
             console.log('Graficando modelo de regresión lineal.');
             const labels = xTrain.map((_, index) => index + 1);
             const predictedValues = linearModel.predict(xTrain);
-            
+
+            console.log('Datos reales:', yTrain);
+            console.log('Predicciones:', predictedValues);
+
             new Chart(ctx, {
                 type: 'line',
                 data: {
