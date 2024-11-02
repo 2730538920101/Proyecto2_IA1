@@ -6,6 +6,17 @@ let yTrain;
 let polynomialModel;
 let polyDegree = 2; // Ejemplo: grado del polinomio, ajustable
 let polyXTrain, polyYTrain;
+
+// Crear instancia del modelo de árbol de decisión
+let decisionTreeModel;
+
+// Crear instancia del modelo de red neuronal
+let neuralNetwork;
+let neuralLayers = [2, 4, 3, 2]; // Ejemplo de capas (input, hidden, output)
+
+
+
+
 // Funciones para cada acción de cada modelo
 export function train(data, modelType) {
     console.log('Ejecutando entrenamiento del modelo:', modelType);
@@ -37,13 +48,29 @@ export function train(data, modelType) {
             document.getElementById('results').innerHTML += `<p>${polyTrainingResults}</p>`;
             break;
         case 'decision-tree':
-            console.log('Entrenando árbol de decisión.');
+            console.log('Entrenando modelo de árbol de decisión.');
+            // Asegúrate de que los datos tengan la estructura correcta
+            const formattedData = data.map(item => Object.values(item)); // Convertir a matriz si es necesario
+            decisionTreeModel = new DecisionTreeID3(formattedData);
+            decisionTreeModel.train(formattedData); // Entrenar el modelo
+            console.log('Modelo de árbol de decisión entrenado.');
+            document.getElementById('results').innerHTML += `<p>Modelo de árbol de decisión entrenado.</p>`;
             break;
         case 'naive-bayes':
             console.log('Entrenando modelo de Naive Bayes.');
             break;
         case 'neural-network':
             console.log('Entrenando red neuronal.');
+            neuralNetwork = new NeuralNetwork(neuralLayers);
+            for (let i = 0; i < 10000; i++) {
+                // Generar datos aleatorios para entrenar
+                let numero1 = Math.random();
+                let numero2 = Math.random();
+                // Entrenar con los datos de ejemplo (ajusta según tus necesidades)
+                neuralNetwork.Entrenar([numero1, numero2], (numero1 > numero2 ? [1, 0] : [0, 1]));
+            }
+            console.log('Red neuronal entrenada.');
+            document.getElementById('results').innerHTML += `<p>Red neuronal entrenada.</p>`;
             break;
         case 'kmeans':
             console.log('Entrenando modelo de k-means.');
@@ -91,13 +118,34 @@ export function predict(data, modelType) {
             document.getElementById('results').innerHTML += `<p>${polyPredictionResults}</p>`;
             break;
         case 'decision-tree':
+            if (!decisionTreeModel) {
+                console.log('El modelo no ha sido entrenado aún.');
+                return;
+            }
             console.log('Realizando predicción con árbol de decisión.');
+            const treePredictions = data.map(item => decisionTreeModel.predict(item, decisionTreeModel.root));
+            console.log('Predicciones del árbol de decisión:', treePredictions);
+            // Mostrar resultados de la predicción
+            const treePredictionResults = `Predicciones del árbol de decisión: ${treePredictions.join(', ')}`;
+            document.getElementById('results').innerHTML += `<p>${treePredictionResults}</p>`;
             break;
         case 'naive-bayes':
             console.log('Realizando predicción con modelo de Naive Bayes.');
             break;
         case 'neural-network':
+            if (!neuralNetwork) {
+                console.log('La red neuronal no ha sido entrenada aún.');
+                return;
+            }
             console.log('Realizando predicción con red neuronal.');
+            const neuralPredictions = data.map(item => {
+                const input = [parseFloat(item.Num1), parseFloat(item.Num2)]; // Usar los valores del CSV
+                return neuralNetwork.Predecir(input);
+            });
+            console.log('Predicciones de la red neuronal:', neuralPredictions);
+            // Mostrar resultados de la predicción
+            const neuralPredictionResults = `Predicciones: ${neuralPredictions.map(p => p.join(', ')).join(' | ')}`;
+            document.getElementById('results').innerHTML += `<p>${neuralPredictionResults}</p>`;
             break;
         case 'kmeans':
             console.log('Realizando predicción con modelo de k-means.');
@@ -187,10 +235,10 @@ export function graph(data, modelType) {
             console.log('Mostrando gráfico de árbol de decisión.');
             break;
         case 'naive-bayes':
-            console.log('Mostrando gráfico de Naive Bayes.');
+            alert('No existe un gráfico de Naive Bayes.');
             break;
         case 'neural-network':
-            console.log('Mostrando gráfico de red neuronal.');
+            alert('No existe un gráfico de red neuronal.');
             break;
         case 'kmeans':
             console.log('Mostrando gráfico de k-means.');
@@ -220,7 +268,7 @@ export function tendence(data, modelType) {
             console.log('Mostrando tendencia de Naive Bayes.');
             break;
         case 'neural-network':
-            console.log('Mostrando tendencia de red neuronal.');
+            alert('No existe una funcion de tendencia de red neuronal.');
             break;
         case 'kmeans':
             console.log('Mostrando tendencia de k-means.');

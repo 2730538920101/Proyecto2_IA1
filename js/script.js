@@ -261,7 +261,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!point.length) errors.push('El campo Punto no puede estar vacío.');
         return errors;
     }
-
+    
     // Manejo de acciones
     function handleAction(action) {
         const selectedModel = modelSelect.value; // Obtener el modelo seleccionado
