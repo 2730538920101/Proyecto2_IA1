@@ -264,7 +264,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Manejo de acciones
     function handleAction(action) {
-        const selectedModel = modelSelect.value;
+        const selectedModel = modelSelect.value; // Obtener el modelo seleccionado
         const model = modelConfig[selectedModel];
         if (model) {
             const errors = model.validate();
@@ -272,19 +272,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert(errors.join('\n'));
                 return;
             }
-            // Llama a la función correspondiente del archivo actions.js
+            // Llama a la función correspondiente del archivo actions.js con el modelo incluido
             switch (action) {
                 case 'train':
-                    train(csvData); // Pasar los datos cargados
+                    train(csvData, selectedModel); // Pasar los datos y el modelo
                     break;
                 case 'predict':
-                    predict(csvData); // Pasar los datos cargados
+                    predict(csvData, selectedModel); // Pasar los datos y el modelo
                     break;
                 case 'graph':
-                    graph(csvData); // Pasar los datos cargados
+                    graph(csvData, selectedModel); // Pasar los datos y el modelo
                     break;
                 case 'tendence':
-                    tendence(csvData); // Pasar los datos cargados
+                    tendence(csvData, selectedModel); // Pasar los datos y el modelo
                     break;
                 default:
                     alert('Acción no válida.');
@@ -293,7 +293,7 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Modelo no válido.');
         }
     }
-
+    
     trainButton.addEventListener('click', () => handleAction('train'));
     predictButton.addEventListener('click', () => handleAction('predict'));
     showChartButton.addEventListener('click', () => handleAction('graph'));
