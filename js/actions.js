@@ -2,6 +2,10 @@
 let linearModel;
 let xTrain;
 let yTrain;
+// Crear instancia del modelo de regresión polinómica
+let polynomialModel;
+let polyDegree = 2; // Ejemplo: grado del polinomio, ajustable
+let polyXTrain, polyYTrain;
 // Funciones para cada acción de cada modelo
 export function train(data, modelType) {
     console.log('Ejecutando entrenamiento del modelo:', modelType);
@@ -22,6 +26,15 @@ export function train(data, modelType) {
             break;
         case 'polynomial-regression':
             console.log('Entrenando modelo de regresión polinómica.');
+            polyXTrain = data.map(item => parseFloat(item.XTrain));
+            polyYTrain = data.map(item => parseFloat(item.YTrain));
+            polynomialModel = new PolynomialRegression();
+            polynomialModel.fit(polyXTrain, polyYTrain, polyDegree); // Ajustar el modelo
+
+            // Mostrar los resultados de entrenamiento
+            const polyTrainingResults = `Modelo polinómico entrenado con R²: ${polynomialModel.getError().toFixed(2)}`;
+            console.log(polyTrainingResults);
+            document.getElementById('results').innerHTML += `<p>${polyTrainingResults}</p>`;
             break;
         case 'decision-tree':
             console.log('Entrenando árbol de decisión.');
@@ -64,7 +77,18 @@ export function predict(data, modelType) {
             document.getElementById('results').innerHTML += `<p>${predictionResults}</p>`;
             break;
         case 'polynomial-regression':
+            if (!polynomialModel) {
+                console.log('El modelo no ha sido entrenado aún.');
+                return;
+            }
             console.log('Realizando predicción con regresión polinómica.');
+
+            const polyPredictions = polyXTrain.map(x => polynomialModel.predict([x])[0]);
+            console.log('Predicciones:', polyPredictions);
+
+            // Mostrar resultados de la predicción
+            const polyPredictionResults = `Predicciones polinómicas: ${polyPredictions.join(', ')}`;
+            document.getElementById('results').innerHTML += `<p>${polyPredictionResults}</p>`;
             break;
         case 'decision-tree':
             console.log('Realizando predicción con árbol de decisión.');
@@ -127,7 +151,37 @@ export function graph(data, modelType) {
             });
             break;
         case 'polynomial-regression':
-            console.log('Mostrando gráfico de regresión polinómica.');
+            console.log('Graficando modelo de regresión polinómica.');
+            const labels2 = polyXTrain.map((_, index) => index + 1);
+            const polyPredictedValues = polynomialModel.predict(polyXTrain);
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels2,
+                    datasets: [
+                        {
+                            label: 'Datos Reales',
+                            data: polyYTrain,
+                            borderColor: 'blue',
+                            fill: false
+                        },
+                        {
+                            label: 'Predicciones',
+                            data: polyPredictedValues,
+                            borderColor: 'red',
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
             break;
         case 'decision-tree':
             console.log('Mostrando gráfico de árbol de decisión.');
@@ -154,10 +208,10 @@ export function tendence(data, modelType) {
     console.log('Datos cargados:', data);
     switch (modelType) {
         case 'linear-regression':
-            console.log('No existe una funcion de tendencia de regresión lineal.');
+            alert('No existe una funcion de tendencia de regresión lineal.');
             break;
         case 'polynomial-regression':
-            console.log('Mostrando tendencia de regresión polinómica.');
+            alert('No existe una funcion de tendencia de regresión polinómica.');
             break;
         case 'decision-tree':
             console.log('Mostrando tendencia de árbol de decisión.');

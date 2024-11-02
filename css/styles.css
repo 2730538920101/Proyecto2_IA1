@@ -1,85 +1,155 @@
+/* Reset básico para asegurar consistencia en todos los navegadores */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
 /* Estilos generales */
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
+    background-color: #f4f4f9;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     margin: 0;
     padding: 20px;
-    color: #333;
 }
 
-/* Encabezado */
+/* Header */
 header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     text-align: center;
+    background-color: #4CAF50;
+    color: white;
+    padding: 20px;
+    width: 100%;
+    max-width: 800px;
+    border-radius: 8px;
     margin-bottom: 20px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Logo */
-#logo {
-    max-width: 100%;
+header h1 {
+    font-size: 1.5rem;
+    margin-bottom: 8px;
+}
+
+header img#logo {
+    width: 80px;
     height: auto;
+    margin-bottom: 10px;
 }
 
-/* Título principal */
-h1 {
-    color: #2c3e50;
-}
-
-/* Estilo para el input de archivo */
-input[type="file"] {
-    display: block;
-    margin: 20px auto;
-}
-
-/* Estilo para el select */
-select {
-    display: block;
-    width: 80%;
-    margin: 20px auto;
+/* Controles de selección y botones */
+#file-input, #model-select, button {
+    margin: 10px 5px;
     padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 16px;
+    font-size: 1rem;
+    border-radius: 4px;
+    border: 1px solid #ddd;
 }
 
-/* Estilos para los parámetros del modelo */
-#parameters {
-    margin: 20px auto;
-    width: 80%;
-    padding: 10px;
-    background-color: #fff;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+#file-input, #model-select {
+    width: 100%;
+    max-width: 400px;
+    color: #555;
 }
 
-/* Botones de acción */
 button {
-    display: inline-block;
-    padding: 10px 20px;
-    margin: 10px;
-    border: none;
-    border-radius: 5px;
-    color: #fff;
-    background-color: #3498db;
+    background-color: #4CAF50;
+    color: white;
     cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s ease;
-}
-
-button:hover {
-    background-color: #2980b9;
-}
-
-/* Estilo para labels e inputs dentro de los parámetros del modelo */
-#parameters label {
-    display: block;
-    margin: 10px 0 5px;
+    border: none;
+    transition: background-color 0.3s, transform 0.2s;
     font-weight: bold;
 }
 
-#parameters input, #parameters select {
+button:hover {
+    background-color: #45a049;
+    transform: scale(1.05);
+}
+
+/* Contenedor de parámetros */
+#parameters {
     width: 100%;
-    padding: 8px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    max-width: 600px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    padding: 20px;
+    margin: 10px 0;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Contenedor de resultados */
+#results-container {
+    width: 100%;
+    max-width: 800px;
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#results-container h2, #chart-container h3 {
+    margin-bottom: 15px;
+    color: #4CAF50;
+    font-size: 1.3rem;
+    text-align: center;
+}
+
+#results {
+    margin-bottom: 20px;
+    font-size: 1rem;
+    color: #333;
+}
+
+/* Contenedor de la gráfica */
+#chart-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 400px; /* Limita el ancho del contenedor */
+    margin: 20px auto;
+    text-align: center;
+}
+
+canvas#chart {
+    width: 100%; /* Gráfica al 100% del contenedor */
+    max-width: 350px; /* Limita aún más el ancho en píxeles */
+    height: 250px; /* Ajusta la altura para mantenerla compacta */
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-top: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Media queries para dispositivos móviles */
+@media (max-width: 600px) {
+    header h1 {
+        font-size: 1.2rem;
+    }
+
+    button {
+        padding: 8px;
+        font-size: 0.9rem;
+    }
+
+    #chart-container {
+        width: 90%;
+        max-width: 300px;
+    }
+
+    canvas#chart {
+        max-width: 280px;
+        height: 200px;
+    }
 }
