@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const trainButton = document.getElementById('trainButton');
     const predictButton = document.getElementById('predictButton');
     const showChartButton = document.getElementById('showChartButton');
+    const showTendenceButton = document.getElementById('showTendenceButton');
 
     let csvData = []; // Para almacenar los datos CSV
 
@@ -374,6 +375,49 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Entrenamiento del modelo
+    showTendenceButton.addEventListener('click', () => {
+        const selectedModel = modelSelect.value;
+        const errors = validateInputs(selectedModel);
+
+        if (errors.length > 0) {
+            alert(errors.join('\n'));
+            return;
+        }
+
+        switch (selectedModel) {
+            case 'linear-regression':
+                tendenceLinearRegression();
+                break;
+
+            case 'polynomial-regression':
+                tendencePolynomialRegression();
+                break;
+
+            case 'decision-tree':
+                tendenceDecisionTree();
+                break;
+
+            case 'naive-bayes':
+                tendenceNaiveBayes();
+                break;
+
+            case 'neural-network':
+                tendenceNeuralNetwork();
+                break;
+
+            case 'kmeans':
+                tendenceKMeans();
+                break;
+
+            case 'knn':
+                tendenceKNN();
+                break;
+
+            default:
+                alert('Modelo no válido.');
+        }
+    });
     
 
     function trainLinearRegression() {
@@ -480,6 +524,41 @@ document.addEventListener('DOMContentLoaded', () => {
     function graphKNN() {
         // Lógica para graficar el modelo KNN
         console.log('Graficando KNN...');
+    }
+
+    function tendenceLinearRegression() {
+        // Lógica ver la tendencia del modelo de regresión lineal
+        console.log('Tendencia regresión lineal...');
+    }
+
+    function tendencePolynomialRegression() {
+        // Lógica ver la tendencia del modelo de regresión polinómica
+        console.log('Tendencia regresión polinómica...');
+    }
+
+    function tendenceDecisionTree() {
+        // Lógica ver la tendencia del modelo de árbol de decisión
+        console.log('Tendencia árbol de decisión...');
+    }
+
+    function tendenceNaiveBayes() {
+        // Lógica ver la tendencia del modelo Naive Bayes
+        console.log('Tendencia Naive Bayes...');
+    }
+
+    function tendenceNeuralNetwork() {
+        // Lógica ver la tendencia de la red neuronal
+        console.log('Tendencia red neuronal...');
+    }
+
+    function tendenceKMeans() {
+        // Lógica para ver la tendencia del modelo K-means
+        console.log('Tendencia K-means...');
+    }
+
+    function tendenceKNN() {
+        // Lógica para ver la tendencia del modelo KNN
+        console.log('Tendencia KNN...');
     }
 
 
