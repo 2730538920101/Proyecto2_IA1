@@ -1,5 +1,7 @@
-// actions.js
-
+// Crear instancia del modelo de regresión lineal
+let linearModel;
+let xTrain;
+let yTrain;
 // Funciones para cada acción de cada modelo
 export function train(data, modelType) {
     console.log('Ejecutando entrenamiento del modelo:', modelType);
@@ -8,6 +10,15 @@ export function train(data, modelType) {
     switch (modelType) {
         case 'linear-regression':
             console.log('Entrenando modelo de regresión lineal.');
+            xTrain = data.map(item => parseFloat(item.XTrain));
+            yTrain = data.map(item => parseFloat(item.YTrain));
+            linearModel = new LinearRegression();
+            linearModel.fit(xTrain, yTrain); // Ajustar el modelo
+            
+            // Mostrar los resultados de entrenamiento
+            const trainingResults = `Modelo entrenado con m: ${linearModel.m.toFixed(2)}, b: ${linearModel.b.toFixed(2)}`;
+            console.log(trainingResults);
+            document.getElementById('results').innerHTML += `<p>${trainingResults}</p>`;
             break;
         case 'polynomial-regression':
             console.log('Entrenando modelo de regresión polinómica.');
@@ -33,11 +44,24 @@ export function train(data, modelType) {
 }
 
 export function predict(data, modelType) {
+    
     console.log('Ejecutando predicción del modelo:', modelType);
     console.log('Datos cargados:', data);
     switch (modelType) {
         case 'linear-regression':
+            if (!linearModel) {
+                console.log('El modelo no ha sido entrenado aún.');
+                return;
+            }
             console.log('Realizando predicción con regresión lineal.');
+            console.log('Valores calculados - m:', linearModel.m, 'b:', linearModel.b);
+            
+            const predictions = xTrain.map(x => linearModel.predict([x])[0]); // Usar xTest para predecir
+            console.log('Predicciones:', predictions);
+            
+            // Mostrar resultados de la predicción
+            const predictionResults = `Predicciones: ${predictions.join(', ')}`;
+            document.getElementById('results').innerHTML += `<p>${predictionResults}</p>`;
             break;
         case 'polynomial-regression':
             console.log('Realizando predicción con regresión polinómica.');
@@ -65,9 +89,42 @@ export function predict(data, modelType) {
 export function graph(data, modelType) {
     console.log('Mostrando gráfico del modelo:', modelType);
     console.log('Datos cargados:', data);
+    // Limpiar el canvas previo
+    const ctx = document.getElementById('chart').getContext('2d');
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     switch (modelType) {
         case 'linear-regression':
-            console.log('Mostrando gráfico de regresión lineal.');
+            console.log('Graficando modelo de regresión lineal.');
+            const labels = xTrain.map((_, index) => index + 1);
+            const predictedValues = linearModel.predict(xTrain);
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Datos Reales',
+                            data: yTrain,
+                            borderColor: 'blue',
+                            fill: false
+                        },
+                        {
+                            label: 'Predicciones',
+                            data: predictedValues,
+                            borderColor: 'red',
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
             break;
         case 'polynomial-regression':
             console.log('Mostrando gráfico de regresión polinómica.');
@@ -97,7 +154,7 @@ export function tendence(data, modelType) {
     console.log('Datos cargados:', data);
     switch (modelType) {
         case 'linear-regression':
-            console.log('Mostrando tendencia de regresión lineal.');
+            console.log('No existe una funcion de tendencia de regresión lineal.');
             break;
         case 'polynomial-regression':
             console.log('Mostrando tendencia de regresión polinómica.');

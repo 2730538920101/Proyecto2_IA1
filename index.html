@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Proyecto Tytus - Machine Learning</title>
-    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -34,7 +34,15 @@
     <button id="showChartButton">Mostrar gráfica</button>
     <button id="showTendenceButton">Tendencia</button>
 
-    
+    <div id="results-container">
+        <h2>Resultados</h2>
+        <div id="results"></div>
+        <div id="chart-container">
+            <h3>Gráfica</h3>
+            <canvas id="chart"></canvas>
+        </div>
+    </div>
+    <script type="text/javascript" src="https://tytusdb.github.io/tytusjs/dist/tytus.js"></script>
     <script type="module" src="js/script.js"></script>
 </body>
 </html>
